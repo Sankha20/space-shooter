@@ -34,16 +34,41 @@ function main(p) {
 
         static loadGame() {
             this.enemies = [];
+            this.enemyBullets = [];
         }
 
         static addEnemy(e) {
             this.enemies.push(e);
         }
 
+        static addBullet(b) {
+            this.enemyBullets.push(b);
+        }
+
+        static runEnemyBullets() {
+            for (var i = this.enemyBullets.length - 1; i >= 0; i--) {
+                let bullet = this.enemyBullets[i];
+
+                bullet.run();
+            }
+        }
+
         static runEnemies() {
-            this.enemies.forEach(enemy => {
+            for (var i = this.enemies.length - 1; i >= 0; i--) {
+                let enemy = this.enemies[i];
+
                 enemy.run();
-            })
+
+                if (enemy.leftScreen) {
+                    this.enemies.splice(i, 1);
+                }
+            }
+        }
+
+        static run() {
+            this.runEnemyBullets();
+            this.runEnemies();
+            console.log(this.enemyBullets.length);
         }
 
         static setButtons(...args) {
@@ -254,6 +279,7 @@ function main(p) {
             this._power = new p.PVector(0, 0.005);
 
             this.showRadius = false;
+            this._leftScreen = false;
         }
 
         applyForce(f) {
@@ -273,11 +299,21 @@ function main(p) {
             this._acc.mult(0);
         }
 
+        customAction() {}
+
         run() {
+            this.checkEdges();
             this.display();
             this.applyForce(this.power);
             this.move();
             this.resetAcceleration();
+            this.customAction();
+        }
+
+        checkEdges() {            
+            if (this.ypos + this.size > p.height) {
+                this.escape();
+            }
         }
 
         display() {
@@ -296,6 +332,14 @@ function main(p) {
                 p.strokeWeight(1);
                 p.ellipse(this.xpos, this.ypos, this.size * 2, this.size * 2);
             }
+        }
+
+        escape() {
+            this._leftScreen = true;
+        }
+
+        get leftScreen() {
+            return this._leftScreen;
         }
 
         get maxSpeed() {
@@ -325,6 +369,24 @@ function main(p) {
         get power() {
             return this._power;
         }
+
+        set power(p) {
+            this._power = p;
+        }
+    }
+
+    class Bullet extends Mover {
+        constructor(master) {
+            super({});
+            this._pos = master.pos.get();
+            this._power = new p.PVector(0, 1);
+            this._maxSpeed = 10;
+        }
+
+        display() {
+            p.fill(255);
+            p.ellipse(this.xpos, this.ypos, 10, 10);
+        }
     }
 
     class Ship extends Mover {
@@ -340,6 +402,10 @@ function main(p) {
             this._energy = this.maxEnergy;
 
             this.sprite = p.loadImage(imgShip);
+
+            this._isDead = false;
+            this._timer = 0;
+            this._team = 0;
 
         }
 
@@ -357,22 +423,31 @@ function main(p) {
                 4);
         }
 
+        customAction() {
+            this.update();
+            this.shipAction();
+        }
+
+        shipAction() {
+            if (this.timer > 60) {
+                this.reset();
+                this.shoot();
+            }
+        }
+
+        shoot() {
+            let bullet = new Bullet(this);
+            
+            Game.addBullet(bullet);
+        }
+
         display() {
-
-            // p.fill(255);
-            // p.stroke(150);
-
-            // p.triangle(this.xpos, this.ypos + this.size,
-            //     this.xpos - this.size, this.ypos - this.size,
-            //     this.xpos + this.size, this.ypos - this.size);
-
-            // p.fill(255, 0, 0);
-            // p.triangle(this.xpos, this.ypos + this.size,
-            //     this.xpos + this.size / 3, this.ypos + this.size / 4,
-            //     this.xpos - this.size / 3, this.ypos + this.size / 4);
-
             p.imageMode(p.CENTER);
-            p.image(this.sprite, this.xpos, this.ypos, this.size * 2, this.size * 2);
+            p.pushMatrix();
+            p.translate(this.xpos, this.ypos);
+            p.scale(1, -1);
+            p.image(this.sprite, 0, 0, this.size * 2, this.size * 2);
+            p.popMatrix();
             if (this.showRadius) {
                 p.noFill();
                 p.stroke(100, 150, 220);
@@ -381,6 +456,32 @@ function main(p) {
             }
 
             this.drawHpBar();
+        }
+
+        reset() {
+            this._timer = 0;
+        }
+
+        update() {
+            this._timer++;
+        }
+
+        get timer() {
+            return this._timer;
+        }
+
+        checkDeath() {
+            if (this.hp <= 0) {
+                this.die();
+            }
+        }
+
+        die() {
+            this._isDead = true;
+        }
+
+        get isDead() {
+            return this._isDead;
         }
 
         get hp() {
@@ -422,7 +523,7 @@ function main(p) {
             p.background(0);
         } else if (Game.id == 1) {
             p.background(22);
-            Game.runEnemies();
+            Game.run();
         } else {
             p.background(255);
         }
