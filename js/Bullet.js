@@ -6,6 +6,7 @@ loadBullet = p =>
             this._power = new p.PVector(0, 1);
             this._maxSpeed = 10;
             this._bgcolor = p.color(0, 0, 255);
+            this._size = 10;
 
             if (master._team == 1) {
                 this._power = new p.PVector(0, -1);
@@ -17,7 +18,7 @@ loadBullet = p =>
             p.fill(255);
             p.stroke(this.backgroundColor);
             p.strokeWeight(2);
-            p.ellipse(this.xpos, this.ypos, 5, 10);
+            p.ellipse(this.xpos, this.ypos, this.size / 2, this.size);
         }
 
         checkEdges() {

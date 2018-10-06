@@ -66,7 +66,22 @@ loadGame = p =>
                 if (bullet.leftScreen) {
                     this.enemyBullets.splice(i, 1);
                 }
+
+                if (this.checkCollision(bullet, player)) {
+                    this.enemyBullets.splice(i, 1);
+                    
+                }
             }
+        }
+
+        static checkCollision(bullet, ship) {
+            let minDistance = bullet.size + ship.size;
+            let distance = PVector.sub(bullet.pos, ship.pos);
+
+            if (distance.mag() < minDistance) {
+                return true;
+            }
+            return false;            
         }
 
         static runEnemies() {
@@ -93,13 +108,6 @@ loadGame = p =>
             return this._timer;
         }
 
-        static run() {
-            this.runEnemyBullets();
-            this.runEnemies();
-            this.runPlayerBullets();
-            this.update();
-        }
-
         static setButtons(...args) {
             this.visibleButtons = [];
 
@@ -110,6 +118,13 @@ loadGame = p =>
 
         static setStage(_id) {
             this.id = _id;
+        }
+
+        static run() {
+            this.runEnemyBullets();
+            this.runEnemies();
+            this.runPlayerBullets();
+            this.update();
         }
 
     }
