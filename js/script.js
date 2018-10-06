@@ -7,9 +7,15 @@ function main(p) {
     let hw = p.width / 2;
     let hh = p.height / 2;
 
+    const map = (x, y, a, b, n) => (n - x) * (b - a) / (y - x) + a;
+
+    // Carregando imagens
+
+    let imgShip = "./media/ship.png";
+
     // Classe estática para manter as informações do jogo
     class Game {
-        
+
         static id() {
             if (id === undefined) {
                 return 5;
@@ -26,9 +32,23 @@ function main(p) {
             }
         }
 
+        static loadGame() {
+            this.enemies = [];
+        }
+
+        static addEnemy(e) {
+            this.enemies.push(e);
+        }
+
+        static runEnemies() {
+            this.enemies.forEach(enemy => {
+                enemy.run();
+            })
+        }
+
         static setButtons(...args) {
             this.visibleButtons = [];
-            
+
             args.forEach(btn => {
                 this.visibleButtons.push(btn);
             })
@@ -40,6 +60,8 @@ function main(p) {
 
     }
 
+    Game.loadGame();
+
     // Functions
     const debui = (...msg) => {
         p.textAlign(p.CENTER, p.CENTER);
@@ -49,7 +71,7 @@ function main(p) {
 
     // Classes
     class GameObject {
-        
+
         constructor(c) {
             this._name = this.constructor.name;
             this._pos = c.pos || new p.PVector(200, 200);
@@ -85,7 +107,7 @@ function main(p) {
     }
 
     class UIObject extends GameObject {
-        
+
         constructor(c) {
             super(c);
             this._bcolor = c.borderColor || p.color(57, 160, 237);
@@ -108,13 +130,13 @@ function main(p) {
         inRange(x, y = null) {
             if (!y) {
                 y = x.y;
-                x = x.x;                
-            }            
+                x = x.x;
+            }
 
             return (
                 this.xpos - this.halfWidth < x &&
                 this.xpos + this.halfWidth > x &&
-                
+
                 this.ypos - this.halfHeight < y &&
                 this.ypos + this.halfHeight > y
             );
@@ -130,7 +152,7 @@ function main(p) {
 
         // Getters
 
-        
+
 
         get text() {
             return this._text;
@@ -206,7 +228,7 @@ function main(p) {
         }
 
         handleClick() {
-            if (Game.id == this.stage) {                
+            if (Game.id == this.stage) {
                 this._onClick();
             }
         }
@@ -220,7 +242,7 @@ function main(p) {
         constructor(c) {
 
             c = Object.assign({}, c);
-            
+
             super(c);
 
             this._size = c.size || 20;
@@ -228,8 +250,10 @@ function main(p) {
             this._mass = 1;
             this._acc = new p.PVector();
             this._velocity = new p.PVector();
+            this._maxSpeed = 4;
+            this._power = new p.PVector(0, 0.005);
 
-            this.showRadius = true;
+            this.showRadius = false;
         }
 
         applyForce(f) {
@@ -241,6 +265,7 @@ function main(p) {
 
         move() {
             this._velocity.add(this.acceleration);
+            this._velocity.limit(this.maxSpeed);
             this._pos.add(this.velocity);
         }
 
@@ -250,6 +275,7 @@ function main(p) {
 
         run() {
             this.display();
+            this.applyForce(this.power);
             this.move();
             this.resetAcceleration();
         }
@@ -259,7 +285,7 @@ function main(p) {
             p.stroke(150);
 
             p.ellipse(this.xpos, this.ypos, this.size, this.size);
-            
+
             p.stroke(255, 0, 0);
             p.strokeWeight(3);
             p.point(this.xpos, this.ypos + this.size);
@@ -270,6 +296,10 @@ function main(p) {
                 p.strokeWeight(1);
                 p.ellipse(this.xpos, this.ypos, this.size * 2, this.size * 2);
             }
+        }
+
+        get maxSpeed() {
+            return this._maxSpeed;
         }
 
         get size() {
@@ -287,38 +317,74 @@ function main(p) {
         get acceleration() {
             return this._acc;
         }
+
+        get halfSize() {
+            return this.size / 2;
+        }
+
+        get power() {
+            return this._power;
+        }
     }
 
     class Ship extends Mover {
-        constructor(c) {
-            c = Object.assign({}, c);
+        constructor(x, y) {
+            let c = {
+                pos: new p.PVector(x, y)
+            };
             super(c);
 
             this._maxHp = 100;
             this._maxEnergy = 20;
             this._HP = this.maxHp;
             this._energy = this.maxEnergy;
+
+            this.sprite = p.loadImage(imgShip);
+
+        }
+
+        drawHpBar() {
+            let padding = 8;
+            let mapHp = map(0, this.maxHp, 0, this.size * 2, this.hp);
+
+            p.stroke(0, 255, 0);
+            p.strokeWeight(1);
+            p.fill(0, 200, 0);
+            p.rectMode(p.CENTER);
+            p.rect(this.xpos,
+                this.ypos - this.size - padding,
+                mapHp,
+                4);
         }
 
         display() {
-            p.fill(255);
-            p.stroke(150);
 
-            p.triangle(this.xpos, this.ypos + this.size,
-                this.xpos - this.size, this.ypos - this.size,
-                this.xpos + this.size, this.ypos - this.size);
-            
-            
-            p.stroke(255, 0, 0);
-            p.strokeWeight(3);
-            p.point(this.xpos, this.ypos + this.size);
+            // p.fill(255);
+            // p.stroke(150);
 
+            // p.triangle(this.xpos, this.ypos + this.size,
+            //     this.xpos - this.size, this.ypos - this.size,
+            //     this.xpos + this.size, this.ypos - this.size);
+
+            // p.fill(255, 0, 0);
+            // p.triangle(this.xpos, this.ypos + this.size,
+            //     this.xpos + this.size / 3, this.ypos + this.size / 4,
+            //     this.xpos - this.size / 3, this.ypos + this.size / 4);
+
+            p.imageMode(p.CENTER);
+            p.image(this.sprite, this.xpos, this.ypos, this.size * 2, this.size * 2);
             if (this.showRadius) {
                 p.noFill();
                 p.stroke(100, 150, 220);
                 p.strokeWeight(1);
                 p.ellipse(this.xpos, this.ypos, this.size * 2, this.size * 2);
             }
+
+            this.drawHpBar();
+        }
+
+        get hp() {
+            return this._HP;
         }
 
         get maxHp() {
@@ -336,7 +402,7 @@ function main(p) {
         pos: new p.PVector(hw, hh - 80),
         text: "Começar jogo",
         stage: 0,
-        onClick: function() {
+        onClick: function () {
             stage1()
         }
     });
@@ -351,18 +417,13 @@ function main(p) {
         text: "Opções",
     });
 
-    let player = new Ship({});
-
-
     const drawUI = () => {
         if (Game.id == 0) {
             p.background(0);
         } else if (Game.id == 1) {
             p.background(22);
-            player.run();
-        }
-        
-        else {
+            Game.runEnemies();
+        } else {
             p.background(255);
         }
 
@@ -370,7 +431,9 @@ function main(p) {
             btn.run();
         })
     }
-    
+
+    Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
+
 
     var stage0 = () => {
         Game.setStage(0);
@@ -390,14 +453,13 @@ function main(p) {
 
     p.draw = () => {
         drawUI();
-        // player.applyForce(GRAVITY);
     }
 
     // MOUSE INTERACTION
 
-    p.mouseClicked = () => {        
+    p.mouseClicked = () => {
         Game.visibleButtons.forEach(btn => {
-            if (btn.isUnderMouse()) {                
+            if (btn.isUnderMouse()) {
                 return btn.handleClick();
             }
         })
