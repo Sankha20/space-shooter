@@ -7,11 +7,16 @@ function main(p) {
     let hw = p.width / 2;
     let hh = p.height / 2;
 
+    let keys = [];
+
     const map = (x, y, a, b, n) => (n - x) * (b - a) / (y - x) + a;
 
     // Carregando imagens
 
-    let imgShip = "./media/ship.png";
+    let player = null;
+
+    let enemy1 = "./media/enemy1.png";
+    let p1 = "./media/p1.png"
 
     // Classe estática para manter as informações do jogo
     class Game {
@@ -35,14 +40,31 @@ function main(p) {
         static loadGame() {
             this.enemies = [];
             this.enemyBullets = [];
+            this.playerBullets = [];
         }
 
         static addEnemy(e) {
             this.enemies.push(e);
         }
 
-        static addBullet(b) {
+        static addBulletE(b) {
             this.enemyBullets.push(b);
+        }
+
+        static addBulletP(b) {
+            this.playerBullets.push(b);
+        }
+
+        static runPlayerBullets() {
+            for (var i = this.playerBullets.length - 1; i >= 0; i--) {
+                let bullet = this.playerBullets[i];
+
+                bullet.run();
+
+                if (bullet.leftScreen) {
+                    this.playerBullets.splice(i, 1);
+                }
+            }
         }
 
         static runEnemyBullets() {
@@ -50,6 +72,10 @@ function main(p) {
                 let bullet = this.enemyBullets[i];
 
                 bullet.run();
+
+                if (bullet.leftScreen) {
+                    this.enemyBullets.splice(i, 1);
+                }
             }
         }
 
@@ -65,10 +91,12 @@ function main(p) {
             }
         }
 
+
+
         static run() {
             this.runEnemyBullets();
             this.runEnemies();
-            console.log(this.enemyBullets.length);
+            this.runPlayerBullets();            
         }
 
         static setButtons(...args) {
@@ -102,6 +130,8 @@ function main(p) {
             this._pos = c.pos || new p.PVector(200, 200);
             this._w = c.width || 200;
             this._h = c.height || 150;
+            this._bcolor = c.borderColor || p.color(57, 160, 237);
+            this._bgcolor = c.backgroundColor || p.color(16, 29, 66);
         }
 
         display() {
@@ -129,14 +159,20 @@ function main(p) {
         get ypos() {
             return this.pos.y;
         }
+
+        get backgroundColor() {
+            return this._bgcolor;
+        }
+
+        get borderColor() {
+            return this._bcolor;
+        }
     }
 
     class UIObject extends GameObject {
 
         constructor(c) {
             super(c);
-            this._bcolor = c.borderColor || p.color(57, 160, 237);
-            this._bgcolor = c.backgroundColor || p.color(16, 29, 66);
             this._highlight = c.highlight || p.color(26, 39, 76);
             this._fcolor = c.frontgroundColor || p.color(255);
             this._text = c.text || "New " + this.name;
@@ -181,14 +217,6 @@ function main(p) {
 
         get text() {
             return this._text;
-        }
-
-        get backgroundColor() {
-            return this._bgcolor;
-        }
-
-        get borderColor() {
-            return this._bcolor;
         }
 
         get fontSize() {
@@ -310,8 +338,8 @@ function main(p) {
             this.customAction();
         }
 
-        checkEdges() {            
-            if (this.ypos + this.size > p.height) {
+        checkEdges() {
+            if (this.ypos - this.size > p.height) {
                 this.escape();
             }
         }
@@ -381,11 +409,26 @@ function main(p) {
             this._pos = master.pos.get();
             this._power = new p.PVector(0, 1);
             this._maxSpeed = 10;
+            this._bgcolor = p.color(0, 0, 255);
+
+            if (master._team == 1) {
+                this._power = new p.PVector(0, -1);
+                this._bgcolor = p.color(255, 0, 0);
+            }
         }
 
         display() {
             p.fill(255);
-            p.ellipse(this.xpos, this.ypos, 10, 10);
+            p.stroke(this.backgroundColor);
+            p.strokeWeight(2);
+            p.ellipse(this.xpos, this.ypos, 5, 10);
+        }
+
+        checkEdges() {
+            if (this.ypos + this.size > p.height ||
+                this.ypos + this.size / 2 < 0) {
+                this.escape();
+            }
         }
     }
 
@@ -401,12 +444,11 @@ function main(p) {
             this._HP = this.maxHp;
             this._energy = this.maxEnergy;
 
-            this.sprite = p.loadImage(imgShip);
+            this.sprite = p.loadImage(enemy1);
 
             this._isDead = false;
             this._timer = 0;
             this._team = 0;
-
         }
 
         drawHpBar() {
@@ -426,7 +468,10 @@ function main(p) {
         customAction() {
             this.update();
             this.shipAction();
+            this.playerAction();
         }
+
+        playerAction() {};
 
         shipAction() {
             if (this.timer > 60) {
@@ -437,17 +482,12 @@ function main(p) {
 
         shoot() {
             let bullet = new Bullet(this);
-            
-            Game.addBullet(bullet);
+
+            Game.addBulletE(bullet);
         }
 
         display() {
-            p.imageMode(p.CENTER);
-            p.pushMatrix();
-            p.translate(this.xpos, this.ypos);
-            p.scale(1, -1);
-            p.image(this.sprite, 0, 0, this.size * 2, this.size * 2);
-            p.popMatrix();
+            this.renderImage();
             if (this.showRadius) {
                 p.noFill();
                 p.stroke(100, 150, 220);
@@ -456,6 +496,15 @@ function main(p) {
             }
 
             this.drawHpBar();
+        }
+
+        renderImage() {
+            p.imageMode(p.CENTER);
+            p.pushMatrix();
+            p.translate(this.xpos, this.ypos);
+            p.scale(1, -1);
+            p.image(this.sprite, 0, 0, this.size * 2, this.size * 2);
+            p.popMatrix();
         }
 
         reset() {
@@ -497,6 +546,62 @@ function main(p) {
         }
     }
 
+    class Player extends Ship {
+        constructor() {
+            super(p.width / 2, p.height - 100);
+            this.sprite = p.loadImage(p1);
+            this._team = 1;
+            this._power = new p.PVector();
+            this._enginePower = 1;
+        }
+
+        playerAction() {
+            this.break();
+        }
+
+        moveUp() {
+            let f = new p.PVector(0, - this.enginePower)
+            this.applyForce(f);
+        }
+
+        moveDown() {
+            let f = new p.PVector(0, this.enginePower)
+            this.applyForce(f);
+        }
+
+        moveLeft() {
+            let f = new p.PVector(- this.enginePower, 0)
+            this.applyForce(f);
+        }
+
+        moveRight() {
+            let f = new p.PVector(this.enginePower, 0)
+            this.applyForce(f);
+        }
+
+        shoot() {
+            let bullet = new Bullet(this);
+
+            Game.addBulletP(bullet);
+        }
+
+        break() {
+            let friction = this.velocity.get();
+            friction.normalize();
+            friction.mult(-0.05);
+            this._velocity.add(friction);
+
+            if (this.velocity.mag() < 0.5) {
+                this._velocity.mult(0);
+            }
+
+        }
+
+        get enginePower() {
+            return this._enginePower;
+        }
+    }
+
     // UI
 
     const btnStart = new Button({
@@ -533,7 +638,11 @@ function main(p) {
         })
     }
 
-    Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
+    let spawnEnemy = setInterval(() => {
+        Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
+    }, 2000);
+
+    player = new Player();
 
 
     var stage0 = () => {
@@ -550,10 +659,29 @@ function main(p) {
 
     // MAIN LOOP
 
+    // Controls
+
+    const manageKeys = () => {
+        if (keys[87]) {
+            player.moveUp();
+        }
+        if (keys[83]) {
+            player.moveDown();
+        }
+        if (keys[65]) {
+            player.moveLeft();
+        }
+        if (keys[68]) {
+            player.moveRight();
+        } 
+    }
+
     let GRAVITY = new p.PVector(0, 0.01);
 
     p.draw = () => {
         drawUI();
+        player.run();
+        manageKeys();
     }
 
     // MOUSE INTERACTION
@@ -583,7 +711,20 @@ function main(p) {
         }
     }
 
+    // Keyboard Interaction
 
+    // 87, 65, 83, 68
+    p.keyPressed = () => {
+        let key = p.keyCode;
+        console.log(p.keyCode);
 
+        keys[key] = true;
+    }
 
+    p.keyReleased = () => {
+        let key = p.keyCode;
+        console.log(p.keyCode);
+
+        keys[key] = false;
+    }
 }
