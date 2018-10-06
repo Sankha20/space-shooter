@@ -8,5 +8,6 @@ function loadEngine(p) {
     PVector = p.PVector;
     color = p.color;
     width = p.width;
+    Random = p.random;
     height = p.height;
 }

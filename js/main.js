@@ -14,17 +14,21 @@ function main(p) {
     loadControls(p);
 
     spawnEnemy = () => {
-        if (Game.timer == 120) {
+        if (Game.timer == 180) {
             Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
             Game.reset();
         }
     }
 
     player = new Player();
-    stage0();
+    stage1();
 
     p.draw = () => {
         drawUI();
         manageKeys();
+
+        if (player.isDead) {
+            stage0();
+        }
     }
 }

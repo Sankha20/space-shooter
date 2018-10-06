@@ -6,6 +6,7 @@ loadUIManager = () => {
 
     stage1 = () => {
         Game.loadGame();
+        player = new Player();
         Game.setStage(1);
         Game.setButtons();
     }

@@ -10,13 +10,31 @@ loadShip = p =>
             this._maxEnergy = 20;
             this._HP = this.maxHp;
             this._energy = this.maxEnergy;
+            this._defense = 0;
 
             this.sprite = p.loadImage(enemy1);
 
             this._isDead = false;
-            this._timer = 0;
             this._team = 0;
+
+            this._atkSpeed = Random(45, 60);
+            this._timer = Random(0, this._atkSpeed);
         }
+
+        takeDamage(attacker) {
+            let damage = attacker.damage - this.defense;
+            this._HP -= damage;
+
+            console.log(this.hp);
+            
+
+            this.checkDeath();
+        }
+
+        get defense() {
+            return this._defense;
+        }
+
 
         drawHpBar() {
             let padding = 8;
@@ -41,7 +59,7 @@ loadShip = p =>
         playerAction() {};
 
         shipAction() {
-            if (this.timer > 60) {
+            if (this.timer > this.atkSpeed) {
                 this.reset();
                 this.shoot();
             }
@@ -82,18 +100,18 @@ loadShip = p =>
             this._timer++;
         }
 
-        get timer() {
-            return this._timer;
-        }
-
         checkDeath() {
             if (this.hp <= 0) {
-                this.die();
+                this._isDead = true;
             }
         }
 
-        die() {
-            this._isDead = true;
+        get timer() {
+            return this._timer;
+        }
+        
+        get atkSpeed() {
+            return this._atkSpeed;
         }
 
         get isDead() {

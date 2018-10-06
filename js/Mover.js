@@ -16,6 +16,12 @@ loadMover = p =>
 
             this.showRadius = false;
             this._leftScreen = false;
+
+            this._damage = 20;
+        }
+
+        get damage() {
+            return this._damage;
         }
 
         applyForce(f) {
