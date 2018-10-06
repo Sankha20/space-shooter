@@ -24,8 +24,6 @@ loadShip = p =>
         takeDamage(attacker) {
             let damage = attacker.damage - this.defense;
             this._HP -= damage;
-
-            console.log(this.hp);
             
             this.checkDeath();
         }

@@ -19,8 +19,7 @@ function main(p) {
             Game.reset();
         }
     } 
-
-    player = new Player();
+    
     stage1();
 
     p.draw = () => {

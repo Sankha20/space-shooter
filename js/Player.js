@@ -1,6 +1,6 @@
 loadPlayer = p =>
     class Player extends Ship {
-        constructor() {
+        constructor(c) {
             super(p.width / 2, p.height - 100);
             this.sprite = p.loadImage(playerImage);
             this._team = 1;
@@ -8,6 +8,8 @@ loadPlayer = p =>
             this._enginePower = 1;
             this._damage = 50;
             this._atkSpeed = 45;
+            console.log();
+            
         }
 
         playerAction() {
