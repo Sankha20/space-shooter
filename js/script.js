@@ -122,13 +122,11 @@ function main(p) {
 
         static run() {
             debui(p.frameRate);
-            if (!this.paused) {
-                this.runEnemyBullets();
-                this.runEnemies();
-                this.runPlayerBullets();
-                this.update();
-                this.spawnEnemy();              
-            }
+            this.runEnemyBullets();
+            this.runEnemies();
+            this.runPlayerBullets();
+            this.update();
+            this.spawnEnemy();
         }
 
         static setButtons(...args) {
@@ -710,17 +708,12 @@ function main(p) {
     p.draw = () => {
         drawUI();
 
-        if (!Game.paused) {
-            manageKeys();
-        }
+        manageKeys();
     }
 
     // MOUSE INTERACTION
 
     p.mouseClicked = () => {
-        if (Game.paused) {
-            Game.togglePause();
-        }
         Game.visibleButtons.forEach(btn => {
             if (btn.isUnderMouse()) {
                 return btn.handleClick();
@@ -742,11 +735,6 @@ function main(p) {
             p.cursor(p.HAND);
         } else {
             p.cursor(p.ARROW);
-        }
-
-        if (p.mouseX > p.width || p.mouseX < 0 ||
-            p.mouseY > p.height || p.mouseY < 0) {
-            Game.togglePause();
         }
     }
 
