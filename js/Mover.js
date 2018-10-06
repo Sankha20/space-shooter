@@ -39,7 +39,7 @@ loadMover = p =>
 
         resetAcceleration() {
             this._acc.mult(0);
-        }
+        } 
 
         customAction() {}
 

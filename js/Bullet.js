@@ -11,7 +11,7 @@ loadBullet = p =>
             if (master._team == 1) {
                 this._power = new p.PVector(0, -1);
                 this._bgcolor = p.color(255, 0, 0);
-            }
+            } 
         }
 
         display() {

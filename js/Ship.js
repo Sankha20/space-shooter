@@ -104,7 +104,7 @@ loadShip = p =>
             if (this.hp <= 0) {
                 this._isDead = true;
             }
-        }
+        } 
 
         get timer() {
             return this._timer;

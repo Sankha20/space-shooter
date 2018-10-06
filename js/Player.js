@@ -6,7 +6,7 @@ loadPlayer = p =>
             this._team = 1;
             this._power = new p.PVector();
             this._enginePower = 1;
-        }
+        } 
 
         playerAction() {
             this.break();

@@ -11,6 +11,7 @@ loadUIManager = () => {
         Game.setButtons();
     }
 
+    
     btnStart = new Button({
         pos: new PVector(halfWidth, halfHeight - 80),
         text: "Começar jogo",

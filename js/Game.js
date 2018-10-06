@@ -90,7 +90,6 @@ loadGame = p =>
                 let enemy = this.enemies[i];
 
                 enemy.run();
-
                 if (enemy.leftScreen || enemy.isDead) {
                     this.enemies.splice(i, 1);
                 }
