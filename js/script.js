@@ -41,6 +41,16 @@ function main(p) {
             this.enemies = [];
             this.enemyBullets = [];
             this.playerBullets = [];
+            this._paused = false;
+            this._timer = 0;
+        }
+
+        static get paused() {
+            return this._paused;
+        }
+
+        static togglePause() {
+            this._paused = !this._paused;
         }
 
         static addEnemy(e) {
@@ -91,12 +101,34 @@ function main(p) {
             }
         }
 
+        static spawnEnemy() {
+            if (this.timer == 120) {
+                Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
+                this.reset();
+            }
+        }
 
+        static reset() {
+            this._timer = 0;
+        }
+
+        static update() {
+            this._timer++;
+        }
+
+        static get timer() {
+            return this._timer;
+        }
 
         static run() {
-            this.runEnemyBullets();
-            this.runEnemies();
-            this.runPlayerBullets();            
+            debui(p.frameRate);
+            if (!this.paused) {
+                this.runEnemyBullets();
+                this.runEnemies();
+                this.runPlayerBullets();
+                this.update();
+                this.spawnEnemy();              
+            }
         }
 
         static setButtons(...args) {
@@ -560,7 +592,7 @@ function main(p) {
         }
 
         moveUp() {
-            let f = new p.PVector(0, - this.enginePower)
+            let f = new p.PVector(0, -this.enginePower)
             this.applyForce(f);
         }
 
@@ -570,7 +602,7 @@ function main(p) {
         }
 
         moveLeft() {
-            let f = new p.PVector(- this.enginePower, 0)
+            let f = new p.PVector(-this.enginePower, 0)
             this.applyForce(f);
         }
 
@@ -585,7 +617,7 @@ function main(p) {
             Game.addBulletP(bullet);
         }
 
-        break() {
+        break () {
             let friction = this.velocity.get();
             friction.normalize();
             friction.mult(-0.05);
@@ -639,12 +671,7 @@ function main(p) {
         })
     }
 
-    let spawnEnemy = setInterval(() => {
-        Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
-    }, 2000);
-
     player = new Player();
-
 
     var stage0 = () => {
         Game.setStage(0);
@@ -657,7 +684,7 @@ function main(p) {
         Game.setButtons();
     }
 
-    stage0();
+    stage1();
 
     // MAIN LOOP
 
@@ -675,19 +702,25 @@ function main(p) {
         }
         if (keys[68]) {
             player.moveRight();
-        } 
+        }
     }
 
     let GRAVITY = new p.PVector(0, 0.01);
 
     p.draw = () => {
         drawUI();
-        manageKeys();
+
+        if (!Game.paused) {
+            manageKeys();
+        }
     }
 
     // MOUSE INTERACTION
 
     p.mouseClicked = () => {
+        if (Game.paused) {
+            Game.togglePause();
+        }
         Game.visibleButtons.forEach(btn => {
             if (btn.isUnderMouse()) {
                 return btn.handleClick();
@@ -709,6 +742,11 @@ function main(p) {
             p.cursor(p.HAND);
         } else {
             p.cursor(p.ARROW);
+        }
+
+        if (p.mouseX > p.width || p.mouseX < 0 ||
+            p.mouseY > p.height || p.mouseY < 0) {
+            Game.togglePause();
         }
     }
 
