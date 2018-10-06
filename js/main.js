@@ -18,7 +18,7 @@ function main(p) {
             Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
             Game.reset();
         }
-    }
+    } 
 
     player = new Player();
     stage1();
