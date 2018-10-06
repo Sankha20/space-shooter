@@ -7,6 +7,7 @@ function main(p) {
     let hw = p.width / 2;
     let hh = p.height / 2;
 
+    // Classe estática para manter as informações do jogo
     class Game {
         
         static id() {
@@ -31,6 +32,10 @@ function main(p) {
             args.forEach(btn => {
                 this.visibleButtons.push(btn);
             })
+        }
+
+        static setStage(_id) {
+            this.id = _id;
         }
 
     }
@@ -68,6 +73,7 @@ function main(p) {
             super(c);
             this._bcolor = c.borderColor || p.color(57, 160, 237);
             this._bgcolor = c.backgroundColor || p.color(16, 29, 66);
+            this._highlight = c.highlight || p.color(26, 39, 76);
             this._fcolor = c.frontgroundColor || p.color(255);
             this._text = c.text || "New " + this.name;
             this._fSize = c.fontSize || 14;
@@ -134,6 +140,10 @@ function main(p) {
             return this._w;
         }
 
+        get highlightColor() {
+            return this._highlight;
+        }
+
         get halfWidth() {
             return this._w / 2;
         }
@@ -171,16 +181,20 @@ function main(p) {
             p.textSize(this.fontSize);
             p.textFont(p.loadFont('monospace'));
 
-            p.fill(this.backgroundColor);
+            if (this.isUnderMouse()) {
+                p.fill(this.highlightColor);
+            } else {
+                p.fill(this.backgroundColor);
+            }
             p.rect(this.xpos, this.ypos, this.width, this.height, 10);
 
             p.fill(this.fontColor);
             p.text(this.text, this.xpos - this.halfWidth, this.ypos - this.halfHeight - 3, this.width, this.height);
         }
 
-        onClick() {
-            if (Game.id == this.stage) {
-                this.onClick;
+        handleClick() {
+            if (Game.id == this.stage) {                
+                this._onClick();
             }
         }
 
@@ -191,32 +205,82 @@ function main(p) {
 
     // UI
 
-    const btnStart = new Button({});
+    const btnStart = new Button({
+        pos: new p.PVector(hw, hh - 80),
+        text: "Começar jogo",
+        stage: 0,
+        onClick: function() {
+            stage1()
+        }
+    });
 
-    const stage0 = () => {
-        Game.id = 0;
-        Game.setButtons(btnStart);
-    }
+    const btnUpgrade = new Button({
+        pos: new p.PVector(hw, hh),
+        text: "Melhorias",
+    });
 
-
+    const btnOptions = new Button({
+        pos: new p.PVector(hw, hh + 80),
+        text: "Opções",
+    });
 
 
     const drawUI = () => {
         if (Game.id == 0) {
             p.background(0);
-
-            Game.visibleButtons.forEach(btn => {
-                btn.run();
-            })
+        } else if (Game.id == 1) {
+            p.background(22);
         }
+        
+        else {
+            p.background(255);
+        }
+
+        Game.visibleButtons.forEach(btn => {
+            btn.run();
+        })
     }
     
 
-    stage0();
-    console.log(Game.visibleButtons);
+    var stage0 = () => {
+        Game.setStage(0);
+        Game.setButtons(btnStart, btnUpgrade, btnOptions);
+    }
+
+    var stage1 = () => {
+        Game.setStage(1);
+        Game.setButtons();
+    }
+
+    stage1();
 
     p.draw = () => {
         drawUI();
+    }
+
+    p.mouseClicked = () => {        
+        Game.visibleButtons.forEach(btn => {
+            if (btn.isUnderMouse()) {                
+                return btn.handleClick();
+            }
+        })
+    }
+    p.mouseMoved = () => {
+        let underMouse = false;
+        for (var i = 0; i < Game.visibleButtons.length; i++) {
+            let btn = Game.visibleButtons[i];
+
+            if (btn.isUnderMouse()) {
+                underMouse = true;
+                break;
+            }
+        }
+
+        if (underMouse) {
+            p.cursor(p.HAND);
+        } else {
+            p.cursor(p.ARROW);
+        }
     }
 
 
