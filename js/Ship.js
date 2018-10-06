@@ -27,7 +27,6 @@ loadShip = p =>
 
             console.log(this.hp);
             
-
             this.checkDeath();
         }
 

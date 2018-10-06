@@ -54,6 +54,13 @@ loadGame = p =>
                 if (bullet.leftScreen) {
                     this.playerBullets.splice(i, 1);
                 }
+
+                this.enemies.forEach(enemy => {
+                    if (this.checkCollision(bullet, enemy)) {
+                        this.playerBullets.splice(i, 1);
+                        enemy.takeDamage(bullet);
+                    }
+                })
             }
         }
 

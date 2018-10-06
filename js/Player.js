@@ -6,6 +6,9 @@ loadPlayer = p =>
             this._team = 1;
             this._power = new p.PVector();
             this._enginePower = 1;
+            this._damage = 50;
+
+            console.log(this._damage);
         } 
 
         playerAction() {
@@ -41,7 +44,7 @@ loadPlayer = p =>
         break () {
             let friction = this.velocity.get();
             friction.normalize();
-            friction.mult(-0.05);
+            friction.mult(-0.1);
             this._velocity.add(friction);
 
             if (this.velocity.mag() < 0.5) {

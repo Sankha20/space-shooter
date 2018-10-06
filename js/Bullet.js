@@ -7,6 +7,7 @@ loadBullet = p =>
             this._maxSpeed = 10;
             this._bgcolor = p.color(0, 0, 255);
             this._size = 10;
+            this._damage = master.damage;
 
             if (master._team == 1) {
                 this._power = new p.PVector(0, -1);
