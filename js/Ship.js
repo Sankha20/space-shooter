@@ -54,7 +54,7 @@ loadShip = p =>
             this.shipAction();
             this.playerAction();
         }
-
+ 
         playerAction() {};
 
         shipAction() {

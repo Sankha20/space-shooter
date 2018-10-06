@@ -15,6 +15,7 @@ loadBullet = p =>
             } 
         }
 
+        
         display() {
             p.fill(255);
             p.stroke(this.backgroundColor);

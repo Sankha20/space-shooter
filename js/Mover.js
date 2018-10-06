@@ -1,7 +1,6 @@
 loadMover = p =>
     class Mover extends GameObject {
         constructor(c) {
-
             c = Object.assign({}, c);
 
             super(c);

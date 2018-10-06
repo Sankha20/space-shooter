@@ -9,7 +9,7 @@ loadPlayer = p =>
             this._damage = 50;
 
             console.log(this._damage);
-        } 
+        }
 
         playerAction() {
             this.break();
