@@ -16,7 +16,7 @@ loadMover = p =>
             this.showRadius = false;
             this._leftScreen = false;
 
-            this._damage = 20;
+            this._damage = 10;
         }
 
         get damage() {

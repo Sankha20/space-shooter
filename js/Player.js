@@ -7,8 +7,7 @@ loadPlayer = p =>
             this._power = new p.PVector();
             this._enginePower = 1;
             this._damage = 50;
-
-            console.log(this._damage);
+            this._atkSpeed = 45;
         }
 
         playerAction() {
