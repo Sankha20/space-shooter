@@ -57,6 +57,15 @@ function main(p) {
             this._h = c.height || 150;
         }
 
+        display() {
+            p.fill(255);
+            p.ellipse(this.xpos, this.ypos, 20, 20);
+        }
+
+        run() {
+            this.display();
+        }
+
         // Getters
         get name() {
             return this._name;
@@ -64,6 +73,14 @@ function main(p) {
 
         get pos() {
             return this._pos;
+        }
+
+        get xpos() {
+            return this.pos.x;
+        }
+
+        get ypos() {
+            return this.pos.y;
         }
     }
 
@@ -81,6 +98,7 @@ function main(p) {
 
         display() {
             p.stroke(this.borderColor);
+            p.strokeWeight(1);
             p.fill(this.backgroundColor);
             p.rectMode(p.CENTER, p.CENTER);
 
@@ -112,16 +130,10 @@ function main(p) {
 
         // Getters
 
-        get xpos() {
-            return this.pos.x;
-        }
+        
 
         get text() {
             return this._text;
-        }
-
-        get ypos() {
-            return this.pos.y;
         }
 
         get backgroundColor() {
@@ -176,6 +188,7 @@ function main(p) {
 
         display() {
             p.stroke(this.borderColor);
+            p.strokeWeight(1);
             p.rectMode(p.CENTER, p.CENTER);
             p.textAlign(p.CENTER, p.CENTER);
             p.textSize(this.fontSize);
@@ -203,6 +216,120 @@ function main(p) {
         }
     }
 
+    class Mover extends GameObject {
+        constructor(c) {
+
+            c = Object.assign({}, c);
+            
+            super(c);
+
+            this._size = c.size || 20;
+
+            this._mass = 1;
+            this._acc = new p.PVector();
+            this._velocity = new p.PVector();
+
+            this.showRadius = true;
+        }
+
+        applyForce(f) {
+            // f = m * a     a = f / m
+
+            f.div(this.mass);
+            this._acc.add(f);
+        }
+
+        move() {
+            this._velocity.add(this.acceleration);
+            this._pos.add(this.velocity);
+        }
+
+        resetAcceleration() {
+            this._acc.mult(0);
+        }
+
+        run() {
+            this.display();
+            this.move();
+            this.resetAcceleration();
+        }
+
+        display() {
+            p.fill(255);
+            p.stroke(150);
+
+            p.ellipse(this.xpos, this.ypos, this.size, this.size);
+            
+            p.stroke(255, 0, 0);
+            p.strokeWeight(3);
+            p.point(this.xpos, this.ypos + this.size);
+
+            if (this.showRadius) {
+                p.noFill();
+                p.stroke(100, 150, 220);
+                p.strokeWeight(1);
+                p.ellipse(this.xpos, this.ypos, this.size * 2, this.size * 2);
+            }
+        }
+
+        get size() {
+            return this._size;
+        }
+
+        get mass() {
+            return this._mass;
+        }
+
+        get velocity() {
+            return this._velocity;
+        }
+
+        get acceleration() {
+            return this._acc;
+        }
+    }
+
+    class Ship extends Mover {
+        constructor(c) {
+            c = Object.assign({}, c);
+            super(c);
+
+            this._maxHp = 100;
+            this._maxEnergy = 20;
+            this._HP = this.maxHp;
+            this._energy = this.maxEnergy;
+        }
+
+        display() {
+            p.fill(255);
+            p.stroke(150);
+
+            p.triangle(this.xpos, this.ypos + this.size,
+                this.xpos - this.size, this.ypos - this.size,
+                this.xpos + this.size, this.ypos - this.size);
+            
+            
+            p.stroke(255, 0, 0);
+            p.strokeWeight(3);
+            p.point(this.xpos, this.ypos + this.size);
+
+            if (this.showRadius) {
+                p.noFill();
+                p.stroke(100, 150, 220);
+                p.strokeWeight(1);
+                p.ellipse(this.xpos, this.ypos, this.size * 2, this.size * 2);
+            }
+        }
+
+        get maxHp() {
+            return this._maxHp;
+        }
+
+        get maxEnergy() {
+            return this._maxEnergy;
+        }
+    }
+
     // UI
 
     const btnStart = new Button({
@@ -224,12 +351,15 @@ function main(p) {
         text: "Opções",
     });
 
+    let player = new Ship({});
+
 
     const drawUI = () => {
         if (Game.id == 0) {
             p.background(0);
         } else if (Game.id == 1) {
             p.background(22);
+            player.run();
         }
         
         else {
@@ -254,9 +384,16 @@ function main(p) {
 
     stage1();
 
+    // MAIN LOOP
+
+    let GRAVITY = new p.PVector(0, 0.01);
+
     p.draw = () => {
         drawUI();
+        // player.applyForce(GRAVITY);
     }
+
+    // MOUSE INTERACTION
 
     p.mouseClicked = () => {        
         Game.visibleButtons.forEach(btn => {
