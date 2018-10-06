@@ -629,6 +629,7 @@ function main(p) {
         } else if (Game.id == 1) {
             p.background(22);
             Game.run();
+            player.run();
         } else {
             p.background(255);
         }
@@ -651,11 +652,12 @@ function main(p) {
     }
 
     var stage1 = () => {
+        Game.loadGame();
         Game.setStage(1);
         Game.setButtons();
     }
 
-    stage1();
+    stage0();
 
     // MAIN LOOP
 
@@ -680,7 +682,6 @@ function main(p) {
 
     p.draw = () => {
         drawUI();
-        player.run();
         manageKeys();
     }
 
