@@ -20,11 +20,32 @@
         <canvas id="canvas"></canvas>
     </div>
 
-    <script type="text/javascript" src="js/script.js"></script>
+    <!-- LOADING AUXILIARY COMPONENTS -->
+    <script type="text/javascript" src="js/global.js"></script>
+    <script type="text/javascript" src="js/customLoader.js"></script>
+
+
+    <!-- LOADING GLOBAL GAME COMPONENTS -->
+    <script type="text/javascript" src="js/GameObject.js"></script>
+    <script type="text/javascript" src="js/Game.js"></script>
+
+    <!-- LOADING UI COMPONENTS -->
+    <script type="text/javascript" src="js/UIObject.js"></script>
+    <script type="text/javascript" src="js/Button.js"></script>
+    <script type="text/javascript" src="js/UIManager.js"></script>
+    
+    <!-- LOADING MOVING GAME COMPONENTS -->
+    <script type="text/javascript" src="js/Mover.js"></script>
+    <script type="text/javascript" src="js/Bullet.js"></script>
+    <script type="text/javascript" src="js/Ship.js"></script>
+    <script type="text/javascript" src="js/Player.js"></script>
+
+    <!-- LOADING MAIN FUNCTION -->
+    <script type="text/javascript" src="js/main.js"></script>
 
     <script>
         var canvas = document.getElementById("canvas");
-        var p = new Processing(canvas, main);
+        var p = new Processing(canvas, entryPoint);
     </script>
 
 </body>
