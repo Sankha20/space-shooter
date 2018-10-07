@@ -33,12 +33,12 @@ loadShip = p =>
             this.takeDamage(obj);
         }
 
-        sideCollision() {
+        borderCollision() {
             if (this.xpos + this.size > width) {
-                this.velocity.x *= -0.8;
+                this.velocity.x *= -0.7;
                 this.pos.x = width - this.size;
             } else if (this.xpos - this.size < 0) {
-                this.velocity.x *= -0.8;
+                this.velocity.x *= -0.7;
                 this.pos.x = this.size;
             }
         }
@@ -47,7 +47,7 @@ loadShip = p =>
             this.update();
             this.shipAction();
             this.playerAction();
-            this.sideCollision();
+            this.borderCollision();
             this.break();
         }
 

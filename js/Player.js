@@ -16,6 +16,24 @@ loadPlayer = p =>
             this.break();
         }
 
+        borderCollision() {
+            if (this.xpos + this.size > width) {
+                this.velocity.x *= -0.7;
+                this.pos.x = width - this.size;
+            } else if (this.xpos - this.size < 0) {
+                this.velocity.x *= -0.7;
+                this.pos.x = this.size;
+            }
+
+            if (this.ypos + this.size > height) {
+                this.velocity.y *= -5;
+                this.pos.y = height - this.size;
+            } else if (this.ypos - this.size < 0) {
+                this.velocity.y *= -5;
+                this.pos.y = this.size;
+            }
+        }
+
         moveUp() {
             let f = new p.PVector(0, -this.enginePower)
             this.applyForce(f);
