@@ -6,6 +6,8 @@ loadShip = p =>
             };
             super(c);
 
+            this._team = 0;
+
             this._maxHp = 100;
             this._maxEnergy = 20;
             this._HP = this.maxHp;
@@ -15,21 +17,56 @@ loadShip = p =>
             this.sprite = p.loadImage(enemy1);
 
             this._isDead = false;
-            this._team = 0;
+            this._immune = false;
 
             this._atkSpeed = Random(45, 60);
             this._timer = Random(0, this._atkSpeed);
         }
 
+        bounce(obj) {
+            let dir = PVector.sub(obj.pos, this.pos);
+            let x = dir.x;
+            let vx = this.velocity.mag();
+            let f = new PVector(-x * vx / 10, 0);
+
+            this.applyForce(f);
+            this.takeDamage(obj);
+        }
+
+        customAction() {
+            this.update();
+            this.shipAction();
+            this.playerAction();
+            this.break();
+        }
+
+        break () {
+            let friction = this.velocity.get();
+            friction.normalize();
+            friction.y = 0;
+            friction.mult(-0.1);
+            this._velocity.add(friction);
+        }
+
         takeDamage(attacker) {
-            let damage = attacker.damage - this.defense;
-            this._HP -= damage;
-            
-            this.checkDeath();
+            if (!this.immune) {
+                let damage = attacker.damage - this.defense;
+                this._HP -= damage;
+
+                this.checkDeath();
+            }
         }
 
         get defense() {
             return this._defense;
+        }
+
+        get immune() {
+            return this._immune;
+        }
+
+        set immune(value) {
+            this._immune = value;
         }
 
 
@@ -45,12 +82,6 @@ loadShip = p =>
                 this.ypos - this.size - padding,
                 mapHp,
                 4);
-        }
-
-        customAction() {
-            this.update();
-            this.shipAction();
-            this.playerAction();
         }
 
         playerAction() {};
@@ -101,12 +132,12 @@ loadShip = p =>
             if (this.hp <= 0) {
                 this._isDead = true;
             }
-        } 
+        }
 
         get timer() {
             return this._timer;
         }
-        
+
         get atkSpeed() {
             return this._atkSpeed;
         }

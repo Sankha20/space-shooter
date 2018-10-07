@@ -17,12 +17,13 @@ loadMover = p =>
             this._leftScreen = false;
 
             this._damage = 10;
+
         }
 
         get damage() {
             return this._damage;
         }
-
+        
         applyForce(f) {
             // f = m * a     a = f / m
 

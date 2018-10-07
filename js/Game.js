@@ -77,7 +77,6 @@ loadGame = p =>
                 if (this.checkCollision(bullet, player)) {
                     this.enemyBullets.splice(i, 1);
                     player.takeDamage(bullet);
-                    
                 }
             }
         }
@@ -99,6 +98,11 @@ loadGame = p =>
                 enemy.run();
                 if (enemy.leftScreen || enemy.isDead) {
                     this.enemies.splice(i, 1);
+                }
+
+                if (this.checkCollision(enemy, player)) {
+                    enemy.bounce(player);
+                    player.bounce(enemy);
                 }
             }
         }

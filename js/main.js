@@ -8,6 +8,7 @@ function main(p) {
     Bullet = loadBullet(p);
     Ship = loadShip(p);
     Player = loadPlayer(p);
+    EnemyShip = loadEnemyShip(p);
 
     Game.loadGame();
     loadUIManager();
@@ -15,11 +16,11 @@ function main(p) {
 
     spawnEnemy = () => {
         if (Game.timer == 180) {
-            Game.addEnemy(new Ship(p.random(20, p.width - 20), -50));
+            Game.addEnemy(new EnemyShip(p.random(20, p.width - 20), -50));
             Game.reset();
         }
     } 
-    
+
     stage1();
 
     p.draw = () => {
