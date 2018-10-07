@@ -1,5 +1,17 @@
 function main(p) {
 
+    /**
+     * TODO
+     * 
+     * Criar scrolling text
+     * Pontuação
+     * Dinheiro
+     * Upgrades
+     * Habilidades
+     * Sistema Save / Load
+     * 
+     */
+    
     GameObject = loadGameObject();
     Game = loadGame(p);
     UIObject = loadUIObject(p);
@@ -19,9 +31,10 @@ function main(p) {
             Game.addEnemy(new EnemyShip(p.random(20, p.width - 20), -50));
             Game.reset();
         }
-    } 
+    }
 
-    stage1();
+    player = new Player();
+    stage0();
 
     p.draw = () => {
         drawUI();
