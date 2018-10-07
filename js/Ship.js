@@ -27,16 +27,27 @@ loadShip = p =>
             let dir = PVector.sub(obj.pos, this.pos);
             let x = dir.x;
             let vx = this.velocity.mag();
-            let f = new PVector(-x * vx / 10, 0);
+            let f = new PVector(-x * vx / 5, 0);
 
             this.applyForce(f);
             this.takeDamage(obj);
+        }
+
+        sideCollision() {
+            if (this.xpos + this.size > width) {
+                this.velocity.x *= -0.8;
+                this.pos.x = width - this.size;
+            } else if (this.xpos - this.size < 0) {
+                this.velocity.x *= -0.8;
+                this.pos.x = this.size;
+            }
         }
 
         customAction() {
             this.update();
             this.shipAction();
             this.playerAction();
+            this.sideCollision();
             this.break();
         }
 
