@@ -23,11 +23,18 @@ loadShip = p =>
             this._timer = Random(0, this._atkSpeed);
         }
 
+        shipAction() {
+            if (this.timer > this.atkSpeed) {
+                this.reset();
+                this.shoot();
+            }
+        }
+
         bounce(obj) {
             let dir = PVector.sub(obj.pos, this.pos);
             let x = dir.x;
             let vx = this.velocity.mag();
-            let f = new PVector(-x * vx / 5, 0);
+            let f = new PVector(-x * (vx + 1) / 5, 0);
 
             this.applyForce(f);
             this.takeDamage(obj);
@@ -96,13 +103,6 @@ loadShip = p =>
         }
 
         playerAction() {};
-
-        shipAction() {
-            if (this.timer > this.atkSpeed) {
-                this.reset();
-                this.shoot();
-            }
-        }
 
         shoot() {
             let bullet = new Bullet(this);
