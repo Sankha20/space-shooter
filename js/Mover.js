@@ -17,7 +17,10 @@ loadMover = p =>
             this._leftScreen = false;
 
             this._damage = 10;
+        }
 
+        get value() {
+            return this._value;
         }
 
         get damage() {
@@ -25,8 +28,6 @@ loadMover = p =>
         }
         
         applyForce(f) {
-            // f = m * a     a = f / m
-
             f.div(this.mass);
             this._acc.add(f);
         }

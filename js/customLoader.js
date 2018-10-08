@@ -10,4 +10,7 @@ function loadEngine(p) {
     width = p.width;
     Random = p.random;
     height = p.height;
+    cos = p.cos;
+    sin = p.sin;
+    ellipse = p.ellipse;
 }

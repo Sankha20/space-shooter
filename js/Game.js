@@ -21,6 +21,7 @@ loadGame = p =>
             this.enemies = [];
             this.enemyBullets = [];
             this.playerBullets = [];
+            this.lootArray = [];
             this._paused = false;
             this._timer = 0;
         }
@@ -35,6 +36,10 @@ loadGame = p =>
 
         static addEnemy(e) {
             this.enemies.push(e);
+        }
+
+        static addLoot(l) {
+            this.lootArray.push(l);
         }
 
         static addBulletE(b) {
@@ -91,6 +96,21 @@ loadGame = p =>
             return false;            
         }
 
+        static runLoot() {
+            for (var i = this.lootArray.length - 1; i >= 0; i--) {
+                let loot = this.lootArray[i];
+
+                loot.run();
+                if (loot.leftScreen || loot.isDead) {
+                    this.lootArray.splice(i, 1);
+                }
+
+                if (this.checkCollision(loot, player)) {
+                    player.getLoot(loot);
+                }
+            }
+        }
+
         static runEnemies() {
             for (var i = this.enemies.length - 1; i >= 0; i--) {
                 let enemy = this.enemies[i];
@@ -135,6 +155,7 @@ loadGame = p =>
             this.runEnemyBullets();
             this.runEnemies();
             this.runPlayerBullets();
+            this.runLoot();
             this.update();
         }
 

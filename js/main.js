@@ -17,6 +17,7 @@ function main(p) {
     UIObject = loadUIObject(p);
     Button = loadButton(p);
     Mover = loadMover(p);
+    Loot = loadLoot(p);
     Bullet = loadBullet(p);
     Ship = loadShip(p);
     Player = loadPlayer(p);
@@ -34,7 +35,7 @@ function main(p) {
     }
 
     player = new Player();
-    stage0();
+    stage1();
 
     p.draw = () => {
         drawUI();

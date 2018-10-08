@@ -25,6 +25,8 @@ loadShip = p =>
             this._globalCooldown = 60;
             this._globalTimer = 0;
             this._globalReady = false;
+
+            this._value = 10;
         }
 
         shipAction() {
@@ -156,7 +158,12 @@ loadShip = p =>
         checkDeath() {
             if (this.hp <= 0) {
                 this._isDead = true;
+                this.drop();
             }
+        }
+
+        drop() {
+            Game.addLoot(new Loot(this));
         }
 
         get gReady() {
