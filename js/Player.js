@@ -9,8 +9,19 @@ loadPlayer = p =>
             this._damage = 50;
             this._atkSpeed = 30;
 
-            this._mode = 1;
+            this._mode = 2;
             this.modes = [1, 2, 3];
+
+            this._magnetForce = 0.01;
+            this._magnetRadius = 100;
+        }
+
+        get magnetForce() {
+            return this._magnetForce;
+        }
+
+        get magnetRadius() {
+            return this._magnetRadius;
         }
 
         playerAction() {
@@ -87,6 +98,10 @@ loadPlayer = p =>
                 Game.addBulletP(b3);
 
             }
+        }
+
+        getLoot(loot) {
+
         }
 
 
