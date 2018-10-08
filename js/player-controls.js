@@ -20,6 +20,11 @@ loadControls = (p) => {
         if (keys[68]) {
             player.moveRight();
         }
+
+        // 1 49
+        if (keys[1]) {
+            player.changeMode();
+        }
     }
 
     // MOUSE
@@ -52,8 +57,13 @@ loadControls = (p) => {
     // Keyboard
     p.keyPressed = () => {
         let key = p.keyCode;
+        // console.log(key);
 
-        keys[key] = true;
+        if (key >= 49 && key <= 57) {
+            player.weaponMode(key - 48);
+        } else {
+            keys[key] = true;
+        }
     }
 
     p.keyReleased = () => {

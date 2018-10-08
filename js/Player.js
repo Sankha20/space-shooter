@@ -7,7 +7,10 @@ loadPlayer = p =>
             this._power = new p.PVector();
             this._enginePower = 1;
             this._damage = 50;
-            this._atkSpeed = 30;            
+            this._atkSpeed = 30;
+
+            this._mode = 1;
+            this.modes = [1, 2, 3];
         }
 
         playerAction() {
@@ -53,9 +56,19 @@ loadPlayer = p =>
         }
 
         shoot() {
-            let bullet = new Bullet(this);
+            if (this.mode == 1) {
+                let bullet = new Bullet(this);
+                Game.addBulletP(bullet);
+            } else if (this.mode == 2) {
+                let b1 = new Bullet(this);
+                let b2 = new Bullet(this);
 
-            Game.addBulletP(bullet);
+                b1.pos.x -= 3;
+                b2.pos.x += 3;
+
+                Game.addBulletP(b1);
+                Game.addBulletP(b2);
+            }
         }
 
         break () {
@@ -70,7 +83,27 @@ loadPlayer = p =>
 
         }
 
+        weaponMode(m) {
+            console.log("Available weapon: " + (this.modes.indexOf(m) != -1));
+            
+            
+            if (this.gReady && this.modes.indexOf(m) != -1) {
+                this.mode = m;
+                console.log("Changing Weapon Mode");
+                
+                this.resetGlobal();
+            }
+        }
+
         get enginePower() {
             return this._enginePower;
+        }
+
+        get mode() {
+            return this._mode;
+        }
+
+        set mode(value) {
+            this._mode = value;
         }
     }
