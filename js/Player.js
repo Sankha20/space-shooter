@@ -68,8 +68,28 @@ loadPlayer = p =>
 
                 Game.addBulletP(b1);
                 Game.addBulletP(b2);
+            } else if (this.mode == 3) {
+                let b1 = new Bullet(this);
+                let b2 = new Bullet(this);
+                let b3 = new Bullet(this);
+
+                let a = b1.power.heading2D();
+                let m = b1.power.mag();
+
+                let a2 = a + 25;
+                let a3 = a - 25;
+
+                b2.power = new PVector(m * cos(a2), m * sin(a2));
+                b3.power = new PVector(m * cos(a3), m * sin(a3));
+
+                Game.addBulletP(b1);
+                Game.addBulletP(b2);
+                Game.addBulletP(b3);
+
             }
         }
+
+
 
         break () {
             let friction = this.velocity.get();

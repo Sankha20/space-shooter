@@ -100,6 +100,10 @@ loadMover = p =>
             return this._velocity;
         }
 
+        set velocity(value) {
+            this._velocity = value;
+        }
+
         get acceleration() {
             return this._acc;
         }

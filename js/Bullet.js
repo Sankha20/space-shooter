@@ -11,7 +11,7 @@ loadBullet = p =>
 
             if (master._team == 1) {
                 this._power = new p.PVector(0, -1);
-                this._bgcolor = p.color(255, 0, 0);
+                this._bgcolor = color(255, 0, 0);
             } 
         }
 
@@ -23,8 +23,10 @@ loadBullet = p =>
         }
 
         checkEdges() {
-            if (this.ypos + this.size > p.height ||
-                this.ypos + this.size / 2 < 0) {
+            if (this.ypos + this.size / 2 > height ||
+                this.ypos - this.size / 2 < 0 ||
+                this.xpos - this.size / 2 < 0 ||
+                this.xpos + this.size / 2 > width ) {
                 this.escape();
             }
         }
