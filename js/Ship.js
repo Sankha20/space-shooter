@@ -21,6 +21,10 @@ loadShip = p =>
 
             this._atkSpeed = Random(45, 60);
             this._timer = Random(0, this._atkSpeed);
+
+            this._globalCooldown = 60;
+            this._globalTimer = 0;
+            this._globalReady = false;
         }
 
         shipAction() {
@@ -137,12 +141,42 @@ loadShip = p =>
 
         update() {
             this._timer++;
+
+            if (this.gTimer < this.gCooldown) {
+                this._globalTimer++;
+            } else {
+                this.gReady = true;
+            }
+        }
+
+        resetGlobal() {
+            this.gTimer = 0;
         }
 
         checkDeath() {
             if (this.hp <= 0) {
                 this._isDead = true;
             }
+        }
+
+        get gReady() {
+            return this._globalReady;
+        }
+
+        set gReady(value) {
+            this._globalReady = value;
+        }
+
+        get gTimer() {
+            return this._globalTimer;
+        }
+
+        set gTimer(value) {
+            this._globalTimer = value;
+        }
+        
+        get gCooldown() {
+            return this._globalCooldown;
         }
 
         get timer() {
